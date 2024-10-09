@@ -7,7 +7,30 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1></h1>
+    <main id="container">
+        <h1>TIC-TAC-TOE</h1>
+        <div class="game-board">
+            <div class="cell" data-row="0" data-col="0"></div>
+            <div class="cell" data-row="0" data-col="1"></div>
+            <div class="cell" data-row="0" data-col="2"></div>
+            <div class="cell" data-row="1" data-col="0"></div>
+            <div class="cell" data-row="1" data-col="1"></div>
+            <div class="cell" data-row="1" data-col="2"></div>
+            <div class="cell" data-row="2" data-col="0"></div>
+            <div class="cell" data-row="2" data-col="1"></div>
+            <div class="cell" data-row="2" data-col="2"></div>
+        </div>
+        <button id="restart-btn">Restart Game</button>
+        <div id="gameStatus"></div>
+    </main>
+    <div id="selectionModal" class="modal">
+        <div class="modal-content">
+            <h2>Choose Your Symbol</h2>
+            <button id="selectX">X</button>
+            <button id="selectO">O</button>
+            <button id="cancel">Cancel</button>
+        </div>
+    </div>
 </body>
 <script src="/main.js"></script>
 </html>
