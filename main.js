@@ -1,16 +1,64 @@
-function createGameBoard(){
-    const board=[['','',''],
-                ['','',''],
-                ['','','']];
+// Function to create the game board and manage the game state
+function createGameBoard() {
+    const board = [['', '', ''], 
+                    ['', '', ''], 
+                    ['', '', '']];
 
-    let turnCounter=0;          // for turn traacking
-    const currentPlayer='X'       // initial player will be X
-    const playerSelection='';     
-    const computerSelection='';
-    let lastCompMove;
-    let gameOver = false;                   //whenever this is true we wont allow any more inputs
+    let turnCounter = 0;          
+    let currentPlayer = 'X';       
+    let playerSelection = '';     
+    let computerSelection = '';
+    let gameOver = false;                   
+    let difficultyLevel=3 ; // Default to hard
 
-    // helper function to check if all cells are filled to declare draw
+    // Minimax algorithm to determine the best move
+    function minimax(board, player) {
+        const opponent = player === 'X' ? 'O' : 'X';
+        const winner = checkWinner(); // Check current state of the board
+    
+        if (winner === computerSelection) return { score: 10 }; 
+        if (winner === playerSelection) return { score: -10 }; 
+        if (winner === 'draw') return { score: 0 }; 
+    
+        const moves = [];
+    
+        for (let i = 0; i < 3; i++) {
+            for (let j = 0; j < 3; j++) {
+                if (board[i][j] === '') {
+                    board[i][j] = player; 
+                    const score = minimax(board, opponent).score;  
+                    moves.push({ score, row: i, col: j });
+                    board[i][j] = ''; // Undo the move
+                }
+            }
+        }
+    
+        let bestMove = null; // Initialize bestMove
+        if (player === computerSelection) {
+            let maxScore = -Infinity;
+            for (const move of moves) {
+                if (move.score > maxScore) {
+                    maxScore = move.score;
+                    bestMove = move;
+                }
+            }
+        } else {
+            let minScore = Infinity;
+            for (const move of moves) {
+                if (move.score < minScore) {
+                    minScore = move.score;
+                    bestMove = move;
+                }
+            }
+        }
+    
+        // If no best move found, return a default value
+        return bestMove || { score: player === computerSelection ? -Infinity : Infinity };
+    }
+    
+   // Helper function to toggle gameover flag
+
+    // Helper function to check if the board is full
     function isBoardFull() {
         for (let i = 0; i < 3; i++) {
             for (let j = 0; j < 3; j++) {
@@ -22,153 +70,188 @@ function createGameBoard(){
         return true; // No empty cells found
     }
 
-    //example comments are for personal notes
+    // Helper function to check if all cells of a row or column are the same
+    function isSame(a, b, c) {
+        return a !== '' && a === b && a === c;
+    }
 
-    // helper function to check if all cells of a row or a column are same
-    function isSame(a, b, c){         
-        return a !== '' && a === b && a === c;  // returns true only if first cell of row or col are not empty and all 3 cells of row or col are full
-    }                                           // eg:  if (this.board[0][j] === 'X' || this.board[0][j] === 'O') {  // column check converted to this
-                                                 // if (this.board[0][j] === this.board[1][j] && this.board[0][j] === this.board[2][j]) 
-
-    
-
-    return {board,
-    turnCounter,
-    currentPlayer,
-    playerSelection,
-    computerSelection,
-    gameOver,
-
-    // function to check if a cell is empty and then put the desired marker on that cell
-    markCell(row, col, player) {
-        if(this.board[row][col]===''){
-            this.board[row][col]=player;
-            this.turnCounter++;
-            return true;
-        }
-        return false;
-    },
-
-    //function to reset the game state and all necessary variables
-    reset(){
-        for(let i=0;i<3;i++){
-            for(let j=0;j<3;j++){
-                this.board[i][j]='';
-            }
-
-        }
-        this.turnCounter = 0; // Reset turn counter
-        this.currentPlayer = 'X'; // Reset to initial player
-        this.gameOver=false;
-
-    },
-
-    //function to check for winning or drawing conditions
-    checkWinner() {
-        // Row Check: Loop through each row
+    function checkWinner() {
+        // Row Check
         for (let i = 0; i < 3; i++) {
-            // Check if the first cell in the row is either 'X' or 'O'
-            if (isSame(this.board[i][0], this.board[i][1], this.board[i][2])) {
-                    console.log(`Winner found in row ${i}`);
-                    this.gameOver=true;
-                    return this.board[i][0]; // Return the winner ('X' or 'O')
-                }
+            if (isSame(board[i][0], board[i][1], board[i][2])) {
+                return board[i][0]; // Return the winner (X or O)
+            }
         }
     
-        // Column Check: Loop through each column
+        // Column Check
         for (let j = 0; j < 3; j++) {
-            if (isSame(this.board[0][j], this.board[1][j], this.board[2][j])) {
-                    console.log(`Winner found in column ${j}`);
-                    this.gameOver=true;
-                    return this.board[0][j]; // Return the winner ('X' or 'O')
-                }
+            if (isSame(board[0][j], board[1][j], board[2][j])) {
+                return board[0][j]; // Return the winner (X or O)
+            }
         }
     
-        // Diagonal Check 1: Top-left to bottom-right
-        if (isSame(this.board[0][0], this.board[1][1], this.board[2][2])) {
-                console.log('Winner found in diagonal 1');
-                this.gameOver=true;
-                return this.board[0][0]; // Return the winner ('X' or 'O')
-            }
-    
-        // Diagonal Check 2: Top-right to bottom-left
-        if (isSame(this.board[0][2], this.board[1][1], this.board[2][0])){
-                console.log('Winner found in diagonal 2');
-                this.gameOver=true;
-                return this.board[0][2]; // Return the winner ('X' or 'O')
+        // Diagonal Check 1
+        if (isSame(board[0][0], board[1][1], board[2][2])) {
+            return board[0][0]; // Return the winner (X or O
         }
     
-         // Check for a draw (if no winner is found and all cells are filled)
-
-        if(isBoardFull()){
-            console.log('no winner found, game draw');
-            this.gameOver = true; // Set game over if it's a draw
-            return 'draw'; // Indicate draw 
+        // Diagonal Check 2
+        if (isSame(board[0][2], board[1][1], board[2][0])) {
+            return board[0][2]; // Return the winner (X or O)
         }
-
-    // If no winner and not a draw, return null (game is still ongoing)
-        return null;
-    },
-
-    // Simple random move for computer -- easy mode for now
-    computerMove(){
-            const emptyCellCount=[];                            //empty array to count all the empty cell at time of func initilization
-            for(let i=0; i<3; i++){
-                for(let j=0; j<3; j++){
-                    if(this.board[i][j]===''){                    //if empty cell found
-                        emptyCellCount.push({row: i, col: j});      // store all the empty cells row and col value in our array
-                    }
-                }
-            }
-            if(emptyCellCount.length>0){
-                const move=emptyCellCount[Math.floor(Math.random()*emptyCellCount.length)];     // make a random move based on the index of i.e emptyCellCount[1]
-                this.markCell(move.row, move.col, this.currentPlayer);              //  eg data in move is {row:1, col:2};
-                return move;  // Return the move (row and col) to track it
-            }
-            return null;         // if no valid move left
-    },
-    // function to allocate marker to respective player
-    symbolAllocation(symbol){
-        this.playerSelection=symbol;
-        this.computerSelection=this.playerSelection==='X' ? 'O' : 'X';        // store the opposite of player selection
-        console.log(`Player selection is ${this.playerSelection}`);
-        console.log(`Computer Selection is ${this.computerSelection}`);
-    },
-    //helper function to make sure we are entering a valid move
-isValidMove(row, col) {
-    // Check if the cell is within bounds and not already marked
-    return row >= 0 && row < 3 && col >= 0 && col < 3 && this.board[row][col] === '';
-},
-    // functon to take player input and make a move
-getPlayerMove(row, col) {
-    // Validate input
-    if (this.isValidMove(row, col)) {
-        this.markCell(row, col, this.currentPlayer);
-        return true; // Move was successful
-    } else {
-        console.log("Invalid move, please try again.");
-
-        // Check for a draw condition
-        if (this.turnCounter >=9) { // 9 moves already made 
-            console.log('Game ends in a draw due to round limit');
-            return false; // Return false to indicate the game should end
+    
+        // Check for a draw
+        if (isBoardFull()) {
+            return 'draw'; // Return 'draw' if the board is full
         }
+    
+        return null; // No winner, game continues
+    }
+    
+
+    return {
+        board,
+        turnCounter,
+        currentPlayer,
+        playerSelection,
+        computerSelection,
+        gameOver,
+        difficultyLevel,
+
+        // Function to mark a cell
+        markCell(row, col, player) {
+            if (this.board[row][col] === '') {
+                this.board[row][col] = player;
+                this.turnCounter++;
+                this.setGameOver();
+                return true;
+            }
+            return false;
+        },
+
+        setGameOver() {
+            const winner = this.checkWinner();
+            if (winner&& winner!=='draw') {
+                this.gameOver = true;
+                console.log(`Game Over: Winner is ${winner}`);
+            } else if (winner === 'draw') {
+                this.gameOver = true;
+                console.log("Game Over: It's a draw.");
+            }
+        },
         
-        return false; // Move was unsuccessful
+
+        // Function to reset the game state
+        reset() {
+            for (let i = 0; i < 3; i++) {
+                for (let j = 0; j < 3; j++) {
+                    this.board[i][j] = '';
+                }
+            }
+            this.turnCounter = 0;
+            this.currentPlayer = 'X';
+            this.gameOver = false;
+        },
+
+        // Computer move function based on difficulty
+       // Computer move function based on difficulty
+computerMove() { 
+    if (!this.gameOver) {
+        const emptyCells = [];
+        for (let i = 0; i < 3; i++) {
+            for (let j = 0; j < 3; j++) {
+                if (this.board[i][j] === '') {
+                    emptyCells.push({ row: i, col: j });
+                }
+            }
+        }
+
+        if (emptyCells.length === 0) return null; // No valid moves left
+
+        if (this.difficultyLevel === 3) {
+            // Hard: Use Minimax algorithm
+            const bestMove = minimax(this.board, this.computerSelection);
+            if (bestMove) {
+                this.markCell(bestMove.row, bestMove.col, this.computerSelection);
+                return bestMove;
+            }
+        } else if (this.difficultyLevel === 1) {
+            // Easy: Random move
+            const move = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+            this.markCell(move.row, move.col, this.computerSelection);
+            return move;
+        } else if (this.difficultyLevel === 2) {
+            // Medium: Try to block player
+            for (const cell of emptyCells) {
+                // Temporarily make the move for the player and check if the player would win
+                this.board[cell.row][cell.col] = this.playerSelection; // Simulate player's move
+                const potentialWinner = this.checkWinner(); // Check if this move would let the player win
+                
+                if (potentialWinner === this.playerSelection) {
+                    this.board[cell.row][cell.col] = ''; // Undo move
+                    this.markCell(cell.row, cell.col, this.computerSelection); // Block the player by marking this cell
+                    console.log(`Computer blocks at row: ${cell.row}, col: ${cell.col}`);
+                    return cell; // Return the blocking move
+                }
+
+                // Undo move if no block is needed
+                this.board[cell.row][cell.col] = '';
+            }
+
+            // If no block is needed, make a random move (as fallback)
+            const move = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+            this.markCell(move.row, move.col, this.computerSelection);
+            console.log(`Computer makes a random move at row: ${move.row}, col: ${move.col}`);
+            return move;
+        }
+
+        console.log('Board state after player move:', this.board);
     }
 },
 
-    // function to manually switch players after each turn
-switchPlayer(){
-    return this.currentPlayer=this.currentPlayer===this.playerSelection ? this.computerSelection: this.playerSelection;
-}
-}
-}
+        // Function to allocate symbols to respective players
+        symbolAllocation(symbol) {
+            this.playerSelection = symbol;
+            this.computerSelection = this.playerSelection === 'X' ? 'O' : 'X'; // Store the opposite of player selection
+            console.log(`Player selection is ${this.playerSelection}`);
+            console.log(`Computer selection is ${this.computerSelection}`);
+        },
 
- const gameBoard=createGameBoard();
- console.log(gameBoard.board);
+        // Helper function to validate a move
+        isValidMove(row, col) {
+            return row >= 0 && row < 3 && col >= 0 && col < 3 && this.board[row][col] === '';
+        },
 
- // show modal 
+     // Function to take player input
+    getPlayerMove(row, col) {
+        if (this.isValidMove(row, col)) {
+            this.markCell(row, col, this.currentPlayer);
+            this.setGameOver(); // Check for a winner after player's move
+            if (this.gameOver) {
+                console.log(`Game Over: Winner is ${checkWinner()}`);
+                return true; // Move was successful
+            }
+            return true; // Move was successful
+        } else {
+            console.log("Invalid move, please try again.");
+            return false; // Move was unsuccessful
+        }
+    },
+
+        // Function to switch players
+        switchPlayer() {
+            this.currentPlayer = this.currentPlayer === this.playerSelection ? this.computerSelection : this.playerSelection;
+            console.log('Switched to:', this.currentPlayer);
+        },
+
+        // Expose the checkWinner function for use in minimax
+        checkWinner: checkWinner
+    };
+}
+const gameBoard = createGameBoard();
+console.log(gameBoard.board);
+
+// Show modal for player selection
 function showModal() {
     document.getElementById('selectionModal').style.display = 'block';
 }
@@ -184,41 +267,27 @@ function closeModal(playerSymbol) {
     }
 }
 
-    // function to reset the game / new game
+// Function to reset the game for a new game
 function newGame() {
     gameBoard.reset(); // Reset the game board state
-    cellData.forEach(cellElement => { // Correct the variable name
+    cellData.forEach(cellElement => {
         cellElement.textContent = ''; // Clear the text content of each cell
-        showModal();
     });
+    showModal(); // Show the modal again for player selection
 }
 
 // Event listeners for the modal buttons
-document.getElementById('selectX').addEventListener('click', () => closeModal('X'));       // store x and close modal
+document.getElementById('selectX').addEventListener('click', () => closeModal('X')); // Store X and close modal
 document.getElementById('selectO').addEventListener('click', () => closeModal('O'));
 document.getElementById('cancel').addEventListener('click', () => closeModal(null));
 // Reset game board on restart button
 document.getElementById('new-game-btn').addEventListener('click', () => newGame()); 
 
-// function for computer to make a random move
-
-function makeCompMove() {
-    // Only make the computer move if the game is not over i.e gameover=false;
-    if (!gameBoard.gameOver && gameBoard.currentPlayer === gameBoard.computerSelection) {
-        const compMove = gameBoard.computerMove();
-        if (compMove) {
-            const compCell = document.querySelector(`[data-row="${compMove.row}"][data-col="${compMove.col}"]`);
-            compCell.textContent = gameBoard.computerSelection;
-            const winnerAfterCompMove = gameBoard.checkWinner();
-            if (winnerAfterCompMove) {
-                console.log(`Winner is ${winnerAfterCompMove}`);
-                return; // Ends game if there's a winner
-            }
-            gameBoard.switchPlayer();
-        }
-    }
-}
-
+// Update difficulty level based on slider input
+document.getElementById('difficulty-slider').addEventListener('input', function () {
+    gameBoard.difficultyLevel = parseInt(this.value);
+    console.log(`Difficulty Level: ${gameBoard.difficultyLevel}`); // Log the current difficulty level
+});
 
 // list of all cells
 const cellData=document.querySelectorAll('.cell');
@@ -227,21 +296,22 @@ const cellData=document.querySelectorAll('.cell');
 
 cellData.forEach(cellElement => {
     cellElement.addEventListener('click', () => {
-        // Only allow player to move if it's their turn and the game isn't over i.e gameover=false;
         if (!gameBoard.gameOver && gameBoard.currentPlayer === gameBoard.playerSelection) {
             const rowData = parseInt(cellElement.getAttribute('data-row'));
             const colData = parseInt(cellElement.getAttribute('data-col'));
             const moveSuccess = gameBoard.getPlayerMove(rowData, colData);
+
             if (moveSuccess) {
                 cellElement.textContent = gameBoard.playerSelection; // Update display
-                const winnerAfterPlayerMove = gameBoard.checkWinner();
-                if (winnerAfterPlayerMove) {
-                    console.log(`Winner is ${winnerAfterPlayerMove}`);
-                    return; // Ends game if there's a winner
+                
+                // Check if the game is over
+                if (gameBoard.gameOver) {
+                    console.log(`Game Over: ${gameBoard.checkWinner()}`);
+                    return; // End if there's a winner or a draw
                 }
-                gameBoard.switchPlayer(); // Manually switch player after player's move
-                // Now it's the computer's turn
-                makeCompMove();
+                
+                gameBoard.switchPlayer(); // Switch to computer's turn
+                makeCompMove(); // Make the computer move
             } else {
                 console.log("Invalid move.");
             }
@@ -249,9 +319,27 @@ cellData.forEach(cellElement => {
     });
 });
 
+// Make computer move
+function makeCompMove() {
+    if (!gameBoard.gameOver && gameBoard.currentPlayer === gameBoard.computerSelection) {
+        const compMove = gameBoard.computerMove();
+
+        if (compMove) {
+            const compCell = document.querySelector(`[data-row="${compMove.row}"][data-col="${compMove.col}"]`);
+            compCell.textContent = gameBoard.computerSelection;
+            
+            // Check if the game is over after computer's move
+            if (gameBoard.gameOver) {
+                console.log(`Game Over: ${gameBoard.checkWinner()}`);
+                return; // End if there's a winner or a draw
+            }
+            
+            gameBoard.switchPlayer(); // Switch to the player's turn
+        }
+    }
+}
+
+console.log(this.board);
 
 
-
-
-// Call showModal when the game starts
 showModal();
