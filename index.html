@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="style.css">
+    <link href='https://fonts.googleapis.com/css?family=Bubblegum Sans' rel='stylesheet'>
 </head>
 <body>
     <main id="container">
-        <h1>TIC-TAC-TOE</h1>
-        <div id="message"></div>
+        <h1 class="neon colorful-text">TIC-TAC-TOE</h1>
         <div class="game-board">
             <div class="cell" data-row="0" data-col="0"></div>
             <div class="cell" data-row="0" data-col="1"></div>
@@ -21,22 +21,24 @@
             <div class="cell" data-row="2" data-col="1"></div>
             <div class="cell" data-row="2" data-col="2"></div>
         </div>
-        <button id="new-game-btn">New Game</button>
+        <button id="newGameButton" class="new-game-button"><span>Begin!</span><span>New Game</span></button>
         <div id="gameStatus"></div>
     </main>
     <div id="selectionModal" class="modal">
         <div class="modal-content">
-            <h2>Choose Your Symbol</h2>
-            <button id="selectX">X</button>
-            <button id="selectO">O</button>
+            <h3>Choose Your Symbol</h3>
+            <div class="button-container">
+                <button id="selectX" class=" modal-btn-X modal-btn"><span>X</span></button>
+                <button id="selectO" class="modal-btn-O modal-btn"><span>O</span></button>
+            </div>
             <label for="difficulty-slider">Set difficulty</label>
             <input type="range" id="difficulty-slider" min="1" max="3" value="1">
             <button id="cancel">Cancel</button>
         </div>
     </div>
-    <div id="gameEndModal" class="game-end-modal">
+    <div id="gameEndModal" class="game-end-modal hidden">
         <div class="game-end-modal-content">
-          <h2 id="modalMessage"></h2>
+          <h2 id="modalMessage" class="neon colorful-text"></h2>
           <button id="newGameBtn">New Game</button>
         </div>
       </div>

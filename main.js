@@ -155,6 +155,7 @@ console.log("Moves array before push:", moves);
             this.turnCounter = 0;
             this.currentPlayer = 'X';
             this.gameOver = false;
+            this.difficultyLevel=1;
         },
 
         // Computer move function based on difficulty
@@ -269,29 +270,15 @@ console.log("Moves array before push:", moves);
 const gameBoard = createGameBoard();
 console.log(gameBoard.board);
 
-// Show modal for player selection
-function showModal() {
-    document.getElementById('selectionModal').style.display = 'block';
-}
-
-// Close the modal and set player selection
-function closeModal(playerSymbol) {
-    document.getElementById('selectionModal').style.display = 'none';
-    gameBoard.symbolAllocation(playerSymbol); // Pass the selected symbol to your game logic
-
-    // Check if player selected 'O', if so, let the computer make the first move
-    if (gameBoard.playerSelection === 'O') {
-        makeCompMove(); // Start with computer's move
-    }
-}
 
 // Function to reset the game for a new game
 function newGame() {
     gameBoard.reset(); // Reset the game board state
     cellData.forEach(cellElement => {
-        cellElement.textContent = ''; // Clear the text content of each cell
-    displayMessage.textContent= "";
+    cellElement.textContent = ''; // Clear the text content of each cell
     });
+    gameBoard.difficultyLevel=1;
+    displayMessage.textContent= "";
     showModal(); // Show the modal again for player selection
 }
 
@@ -300,15 +287,21 @@ document.getElementById('selectX').addEventListener('click', () => closeModal('X
 document.getElementById('selectO').addEventListener('click', () => closeModal('O'));
 document.getElementById('cancel').addEventListener('click', () => closeModal(null));
 
-
 // Reset game board on new game button
-document.getElementById('new-game-btn').addEventListener('click', () => newGame()); 
-
-// Update difficulty level based on slider input
-document.getElementById('difficulty-slider').addEventListener('input', function () {
-    gameBoard.difficultyLevel = parseInt(this.value);
-    console.log(`Difficulty Level: ${gameBoard.difficultyLevel}`); // Log the current difficulty level
+document.getElementById('newGameButton').addEventListener('click', () => {
+    // Reset the game board logic here
+    gameBoard.reset();
+    document.querySelectorAll('.cell').forEach(cell => cell.textContent = '');
+    
+    const difficultySlider = document.getElementById('difficulty-slider');
+    gameBoard.difficultyLevel = 1; // Reset difficulty level in game logic
+    difficultySlider.value = 1; // Reset slider visual content
+    
+    document.getElementById('modalMessage').textContent = '';
+    showModal(); 
 });
+
+
 
 // list of all cells
 const cellData=document.querySelectorAll('.cell');
@@ -325,10 +318,17 @@ cellData.forEach(cellElement => {
             const rowData = parseInt(cellElement.getAttribute('data-row'));
             const colData = parseInt(cellElement.getAttribute('data-col'));
             const moveSuccess = gameBoard.getPlayerMove(rowData, colData);
-
+            
             if (moveSuccess) {
                 cellElement.textContent = gameBoard.playerSelection; // Update display
-                
+                if(gameBoard.playerSelection==='X'){            // adding class for styling
+                    cellElement.classList.add('X-color')
+                    cellElement.classList.remove('O-color')
+                }
+                else{
+                    cellElement.classList.add('O-color')
+                    cellElement.classList.remove('X-color')
+                }
                 // Check if the game is over
                 if (gameBoard.gameOver) {
                     gameEnd();
@@ -348,11 +348,19 @@ cellData.forEach(cellElement => {
 function makeCompMove() {
     if (!gameBoard.gameOver && gameBoard.currentPlayer === gameBoard.computerSelection) {
         const compMove = gameBoard.computerMove();
-
+        
         if (compMove) {
             const compCell = document.querySelector(`[data-row="${compMove.row}"][data-col="${compMove.col}"]`);
             compCell.textContent = gameBoard.computerSelection;
-            
+
+            if(gameBoard.computerSelection==='X'){      // adding class for styling
+                compCell.classList.add('X-color')
+                compCell.classList.remove('O-color')
+            }
+            else{
+                compCell.classList.add('O-color')
+                compCell.classList.remove('X-color')
+            }
             // Check if the game is over after computer's move
             if (gameBoard.gameOver) {
                 gameEnd();
@@ -366,29 +374,56 @@ function makeCompMove() {
 // function to bring up the endgame modal and declare winner
 function gameEnd() {
     const modal = document.getElementById('gameEndModal');
-    modal.style.display='block';
+    modal.classList.remove('hidden');
+    modal.classList.add('show');
     const modalMessage = document.getElementById('modalMessage');
     const winner = gameBoard.checkWinner();
-
+    
     if (winner === 'draw') {
         modalMessage.textContent = "It's a draw! Try again.";
     } else {
         modalMessage.textContent = `WINNER FOUND!! ${winner} wins!`;
-    }
-
-    modal.style.display = 'flex'; // Show the modal
+    } // Show the modal
 }
 
 // Event listener for GAMEEND modal
 document.getElementById('newGameBtn').addEventListener('click', () => {
+    const modal = document.getElementById('gameEndModal');
+    modal.classList.add('hidden');
+    modal.classList.remove('show');
     // Reset the game board logic here
     gameBoard.reset();
     document.querySelectorAll('.cell').forEach(cell => cell.textContent = '');
-    const modal = document.getElementById('gameEndModal');
-    modal.style.display = 'none';
+    
+    const difficultySlider = document.getElementById('difficulty-slider');
+    gameBoard.difficultyLevel = 1; // Reset difficulty level in game logic
+    difficultySlider.value = 1; // Reset slider visual content
     
     document.getElementById('modalMessage').textContent = '';
     showModal(); 
 });
 
+// Show modal for player selection
+function showModal() {
+    document.getElementById('selectionModal').classList.add('show');
+    document.getElementById('selectionModal').classList.remove('hidden');
+}
+
+// Close the modal and set player selection
+function closeModal(playerSymbol) {
+    document.getElementById('selectionModal').classList.add('hidden');
+    document.getElementById('selectionModal').classList.remove('show');
+    gameBoard.symbolAllocation(playerSymbol); // Pass the selected symbol to your game logic
+    document.querySelectorAll('.cell').forEach(cell => cell.setAttribute('class', 'cell') );// resetting class for cell border styling
+    // Check if player selected 'O', if so, let the computer make the first move
+    if (gameBoard.playerSelection === 'O') {
+        makeCompMove(); // Start with computer's move
+    }
+}
+
+// Update difficulty level based on slider input
+document.getElementById('difficulty-slider').addEventListener('input', function () {
+    gameBoard.difficultyLevel = parseInt(this.value);
+    console.log(`Difficulty Level: ${gameBoard.difficultyLevel}`); // Log the current difficulty level
+});
 showModal();
