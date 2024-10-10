@@ -9,6 +9,7 @@
 <body>
     <main id="container">
         <h1>TIC-TAC-TOE</h1>
+        <div id="message"></div>
         <div class="game-board">
             <div class="cell" data-row="0" data-col="0"></div>
             <div class="cell" data-row="0" data-col="1"></div>
@@ -33,6 +34,12 @@
             <button id="cancel">Cancel</button>
         </div>
     </div>
+    <div id="gameEndModal" class="game-end-modal">
+        <div class="game-end-modal-content">
+          <h2 id="modalMessage"></h2>
+          <button id="newGameBtn">New Game</button>
+        </div>
+      </div>
 </body>
 <script src="/main.js"></script>
 </html>

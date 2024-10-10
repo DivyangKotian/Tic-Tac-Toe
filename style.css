@@ -8,25 +8,35 @@ body{
     display: flex;
     justify-content: center;
     align-items: center;
-    border: 1px solid black;
+    background-color: #282828;
 }
 
 #container{
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 4rem;
+    background-color: #121212;
+    width: 100%;
+    padding: 1rem;
 }
 
 .game-board{
     display: grid;
-    grid-template-columns: repeat(3, 100px);
-    grid-template-rows: repeat(3, 100px);
+    grid-template-columns: repeat(3, 150px);
+    grid-template-rows: repeat(3, 150px);
     gap: 5px;
     margin: 20px auto;
+    background-color: #3f3f3f;
+    padding: 5px;
+    border-radius: 10px;
 }
 
 
 .cell {
-    width: 100px;
-    height: 100px;
+    width: 150px;
+    height: 150px;
     background-color: #f0f0f0;
     display: flex;
     justify-content: center;
@@ -34,14 +44,15 @@ body{
     font-size: 36px;
     cursor: pointer;
     border: 1px solid #333;
+    border-radius: 10px;
 }
 
 .cell:hover {
     background-color: #ddd;
-    transform: scale(1.04)
+    transform: scale(1.03)
 }
 
-#restart-btn {
+#new-game-btn {             
     margin-top: 20px;
     padding: 10px 20px;
     font-size: 16px;
@@ -75,3 +86,28 @@ body{
         border: 1px solid #888;
         width: 40%; 
 }
+
+.game-end-modal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5); /* Overlay effect */
+    justify-content: center;
+    align-items: center;
+  }
+
+  .game-end-modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    text-align: center;
+  }
+
+  #newGameBtn {         /*game end button*/
+    margin-top: 20px;
+    padding: 10px 20px;
+    cursor: pointer;
+  }

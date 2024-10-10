@@ -9,55 +9,12 @@ function createGameBoard() {
     let playerSelection = '';     
     let computerSelection = '';
     let gameOver = false;                   
-    let difficultyLevel=3 ; // Default to hard
+    let difficultyLevel=1 ; // Default to easy
 
     // Minimax algorithm to determine the best move
-    function minimax(board, player) {
-        const opponent = player === 'X' ? 'O' : 'X';
-        const winner = checkWinner(); // Check current state of the board
     
-        if (winner === computerSelection) return { score: 10 }; 
-        if (winner === playerSelection) return { score: -10 }; 
-        if (winner === 'draw') return { score: 0 }; 
+    // Helper function to toggle gameover flag
     
-        const moves = [];
-    
-        for (let i = 0; i < 3; i++) {
-            for (let j = 0; j < 3; j++) {
-                if (board[i][j] === '') {
-                    board[i][j] = player; 
-                    const score = minimax(board, opponent).score;  
-                    moves.push({ score, row: i, col: j });
-                    board[i][j] = ''; // Undo the move
-                }
-            }
-        }
-    
-        let bestMove = null; // Initialize bestMove
-        if (player === computerSelection) {
-            let maxScore = -Infinity;
-            for (const move of moves) {
-                if (move.score > maxScore) {
-                    maxScore = move.score;
-                    bestMove = move;
-                }
-            }
-        } else {
-            let minScore = Infinity;
-            for (const move of moves) {
-                if (move.score < minScore) {
-                    minScore = move.score;
-                    bestMove = move;
-                }
-            }
-        }
-    
-        // If no best move found, return a default value
-        return bestMove || { score: player === computerSelection ? -Infinity : Infinity };
-    }
-    
-   // Helper function to toggle gameover flag
-
     // Helper function to check if the board is full
     function isBoardFull() {
         for (let i = 0; i < 3; i++) {
@@ -118,6 +75,53 @@ function createGameBoard() {
         gameOver,
         difficultyLevel,
 
+        minimax(board, player) {
+        let opponent = player === 'X' ? 'O' : 'X';
+        let winner = this.checkWinner(); // Check current state of the board
+    
+        if (winner === this.computerSelection) return { score: 10 }; 
+        if (winner === this.playerSelection) return { score: -10 }; 
+        if (winner === 'draw') return { score: 0 }; 
+    
+        const moves = [];
+    
+        for (let i = 0; i < 3; i++) {
+            for (let j = 0; j < 3; j++) {
+                if (this.board[i][j] === '') {
+                    this.board[i][j] = player; 
+                    const score = this.minimax(this.board, opponent).score;  
+                    console.log("Board state:", board);
+console.log("Moves array before push:", moves);
+                    moves.push({ score, row: i, col: j });
+                    this.board[i][j] = ''; // Undo the move
+                }
+            }
+        }
+    
+        let bestMove = null; // Initialize bestMove
+        if (player === this.computerSelection) {
+            let maxScore = -Infinity;
+            for (const move of moves) {
+                if (move.score > maxScore) {
+                    maxScore = move.score;
+                    bestMove = move;
+                }
+            }
+        } else {
+            let minScore = Infinity;
+            for (const move of moves) {
+                if (move.score < minScore) {
+                    minScore = move.score;
+                    bestMove = move;
+                }
+            }
+        }
+        // console.log(bestMove);
+        // If no best move found, return a default value
+        return bestMove || { score: currentPlayer === computerSelection ? -Infinity : Infinity, row: -1, col: -1 };
+
+    },
+        
         // Function to mark a cell
         markCell(row, col, player) {
             if (this.board[row][col] === '') {
@@ -155,62 +159,76 @@ function createGameBoard() {
 
         // Computer move function based on difficulty
        // Computer move function based on difficulty
-computerMove() { 
-    if (!this.gameOver) {
-        const emptyCells = [];
-        for (let i = 0; i < 3; i++) {
-            for (let j = 0; j < 3; j++) {
-                if (this.board[i][j] === '') {
-                    emptyCells.push({ row: i, col: j });
-                }
-            }
-        }
-
-        if (emptyCells.length === 0) return null; // No valid moves left
-
-        if (this.difficultyLevel === 3) {
-            // Hard: Use Minimax algorithm
-            const bestMove = minimax(this.board, this.computerSelection);
-            if (bestMove) {
-                this.markCell(bestMove.row, bestMove.col, this.computerSelection);
-                return bestMove;
-            }
-        } else if (this.difficultyLevel === 1) {
-            // Easy: Random move
-            const move = emptyCells[Math.floor(Math.random() * emptyCells.length)];
-            this.markCell(move.row, move.col, this.computerSelection);
-            return move;
-        } else if (this.difficultyLevel === 2) {
-            // Medium: Try to block player
-            for (const cell of emptyCells) {
-                // Temporarily make the move for the player and check if the player would win
-                this.board[cell.row][cell.col] = this.playerSelection; // Simulate player's move
-                const potentialWinner = this.checkWinner(); // Check if this move would let the player win
-                
-                if (potentialWinner === this.playerSelection) {
-                    this.board[cell.row][cell.col] = ''; // Undo move
-                    this.markCell(cell.row, cell.col, this.computerSelection); // Block the player by marking this cell
-                    console.log(`Computer blocks at row: ${cell.row}, col: ${cell.col}`);
-                    return cell; // Return the blocking move
+        computerMove() { 
+            if (!this.gameOver) {
+                const emptyCells = [];
+                for (let i = 0; i < 3; i++) {
+                    for (let j = 0; j < 3; j++) {
+                        if (this.board[i][j] === '') {
+                            emptyCells.push({ row: i, col: j });
+                        }
+                    }
                 }
 
-                // Undo move if no block is needed
-                this.board[cell.row][cell.col] = '';
+                if (emptyCells.length === 0) return null; // No valid moves left
+
+                // If it's the first turn for the computer, choose a random move
+                if (this.turnCounter <= 1) {
+                    const randomMove = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+                    this.markCell(randomMove.row, randomMove.col, this.computerSelection);
+                    return randomMove;
+                }
+
+                if (this.difficultyLevel === 3) {
+                     // Hard: Use Minimax algorithm
+                        const bestMove = this.minimax(this.board, this.computerSelection);
+                        if (bestMove && bestMove.row !== -1 && bestMove.col !== -1) {
+                            this.markCell(bestMove.row, bestMove.col, this.computerSelection);
+                            return bestMove;
+                        } else {
+                            console.log("No valid move found"); // Handle fallback, such as game already being over
+                            return null; // or any other fallback behavior you need
+                        }
+                    }
+                 else if (this.difficultyLevel === 1) {
+                    // Easy: Random move
+                    const move = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+                    this.markCell(move.row, move.col, this.computerSelection);
+                    return move;
+                } 
+                else if (this.difficultyLevel === 2) {
+                    // Medium: Try to block player
+                    for (const cell of emptyCells) {
+                        // Temporarily make the move for the player and check if the player would win
+                        this.board[cell.row][cell.col] = this.playerSelection; // Simulate player's move
+                        const potentialWinner = this.checkWinner(); // Check if this move would let the player win
+                        
+                        if (potentialWinner === this.playerSelection) {
+                            this.board[cell.row][cell.col] = ''; // Undo move
+                            this.markCell(cell.row, cell.col, this.computerSelection); // Block the player by marking this cell
+                            console.log(`Computer blocks at row: ${cell.row}, col: ${cell.col}`);
+                            return cell; // Return the blocking move
+                        }
+
+                        // Undo move if no block is needed
+                        this.board[cell.row][cell.col] = '';
+                    }
+
+                    // If no block is needed, make a random move (as fallback)
+                    const move = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+                    this.markCell(move.row, move.col, this.computerSelection);
+                    console.log(`Computer makes a random move at row: ${move.row}, col: ${move.col}`);
+                    return move;
+                }
+
+                console.log('Board state after player move:', this.board);
             }
+            console.log(`gameOver flag is set to: ${gameBoard.gameOver}`);
 
-            // If no block is needed, make a random move (as fallback)
-            const move = emptyCells[Math.floor(Math.random() * emptyCells.length)];
-            this.markCell(move.row, move.col, this.computerSelection);
-            console.log(`Computer makes a random move at row: ${move.row}, col: ${move.col}`);
-            return move;
-        }
-
-        console.log('Board state after player move:', this.board);
-    }
-},
+        },
 
         // Function to allocate symbols to respective players
-        symbolAllocation(symbol) {
+        symbolAllocation(symbol){
             this.playerSelection = symbol;
             this.computerSelection = this.playerSelection === 'X' ? 'O' : 'X'; // Store the opposite of player selection
             console.log(`Player selection is ${this.playerSelection}`);
@@ -272,15 +290,18 @@ function newGame() {
     gameBoard.reset(); // Reset the game board state
     cellData.forEach(cellElement => {
         cellElement.textContent = ''; // Clear the text content of each cell
+    displayMessage.textContent= "";
     });
     showModal(); // Show the modal again for player selection
 }
 
-// Event listeners for the modal buttons
+// Event listeners for the start game modal buttons
 document.getElementById('selectX').addEventListener('click', () => closeModal('X')); // Store X and close modal
 document.getElementById('selectO').addEventListener('click', () => closeModal('O'));
 document.getElementById('cancel').addEventListener('click', () => closeModal(null));
-// Reset game board on restart button
+
+
+// Reset game board on new game button
 document.getElementById('new-game-btn').addEventListener('click', () => newGame()); 
 
 // Update difficulty level based on slider input
@@ -291,6 +312,10 @@ document.getElementById('difficulty-slider').addEventListener('input', function 
 
 // list of all cells
 const cellData=document.querySelectorAll('.cell');
+const displayMessage = document.getElementById('message'); // Assuming there's an element with id="message"
+
+
+
 
 // event listener on all cells to make player move
 
@@ -306,7 +331,7 @@ cellData.forEach(cellElement => {
                 
                 // Check if the game is over
                 if (gameBoard.gameOver) {
-                    console.log(`Game Over: ${gameBoard.checkWinner()}`);
+                    gameEnd();
                     return; // End if there's a winner or a draw
                 }
                 
@@ -330,7 +355,7 @@ function makeCompMove() {
             
             // Check if the game is over after computer's move
             if (gameBoard.gameOver) {
-                console.log(`Game Over: ${gameBoard.checkWinner()}`);
+                gameEnd();
                 return; // End if there's a winner or a draw
             }
             
@@ -338,8 +363,32 @@ function makeCompMove() {
         }
     }
 }
+// function to bring up the endgame modal and declare winner
+function gameEnd() {
+    const modal = document.getElementById('gameEndModal');
+    modal.style.display='block';
+    const modalMessage = document.getElementById('modalMessage');
+    const winner = gameBoard.checkWinner();
 
-console.log(this.board);
+    if (winner === 'draw') {
+        modalMessage.textContent = "It's a draw! Try again.";
+    } else {
+        modalMessage.textContent = `WINNER FOUND!! ${winner} wins!`;
+    }
 
+    modal.style.display = 'flex'; // Show the modal
+}
+
+// Event listener for GAMEEND modal
+document.getElementById('newGameBtn').addEventListener('click', () => {
+    // Reset the game board logic here
+    gameBoard.reset();
+    document.querySelectorAll('.cell').forEach(cell => cell.textContent = '');
+    const modal = document.getElementById('gameEndModal');
+    modal.style.display = 'none';
+    
+    document.getElementById('modalMessage').textContent = '';
+    showModal(); 
+});
 
 showModal();
