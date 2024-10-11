@@ -154,6 +154,8 @@ function createGameBoard() {
             this.currentPlayer = 'X';
             this.gameOver = false;
             this.difficultyLevel=1;
+            this.playerSelection='X';
+            this.computerSelection='O';
         },
 
         // Computer move function based on difficulty
@@ -263,56 +265,65 @@ function createGameBoard() {
         checkWinner: checkWinner
     };
 }
+// Initialize the game board
 const gameBoard = createGameBoard();
 
-// list of all cells
-const cellData=document.querySelectorAll('.cell');
-
-
+// Select DOM elements
+const cellData = document.querySelectorAll('.cell');
 const displayMessage = document.getElementById('message');
-const difficultySlider=document.querySelector('#difficulty-slider');
-const difficultyValue= document.querySelector('#difficultyValue');
-const startButton= document.querySelector('.start-game');
-const buttonX= document.querySelector('.modal-btn-X');
-const buttonO= document.querySelector('.modal-btn-O');
+const difficultySlider = document.querySelector('#difficulty-slider');
+const difficultyValue = document.querySelector('#difficultyValue');
+const startButton = document.querySelector('.start-game');
+const buttonX = document.querySelector('.modal-btn-X');
+const buttonO = document.querySelector('.modal-btn-O');
 
-// Event listeners for the start game modal buttons
-buttonX.addEventListener('click', () =>{
+// Event listeners for player marker selection
+buttonX.addEventListener('click', () => {
     assignMarker('X');
     buttonX.classList.add('active');
-    buttonO.classList.remove('active')
-})
+    buttonO.classList.remove('active');
+});
 
-buttonO.addEventListener('click', () =>{
+buttonO.addEventListener('click', () => {
     assignMarker('O');
     buttonO.classList.add('active');
-    buttonX.classList.remove('active')
-})
+    buttonX.classList.remove('active');
+});
+
+// Event listener for cancel button
 document.getElementById('cancel').addEventListener('click', () => closeModal(null));
 
-//assign markers to player and computer 
-function assignMarker(marker){
+// Event listener for the start game button
+startButton.addEventListener('click', () => closeModal());
+
+// Event listener for the new game button
+document.getElementById('newGameButton').addEventListener('click', () => {
+    resetGame();
+    showModal();
+});
+
+// Event listener for difficulty slider
+difficultySlider.addEventListener('input', function () {
+    gameBoard.difficultyLevel = parseInt(this.value);
+    difficultyValue.textContent = difficultySlider.value;
+});
+
+// Assign markers to player and computer
+function assignMarker(marker) {
     gameBoard.symbolAllocation(marker); // Pass the selected symbol to your game logic
 }
 
-//event listerner for start button
-startButton.addEventListener('click', () => closeModal());
-
-
-// Reset game board on new game button
-document.getElementById('newGameButton').addEventListener('click', () => {
-    // Reset the game board logic here
+// Reset the game board
+function resetGame() {
     gameBoard.reset();
-    document.querySelectorAll('.cell').forEach(cell => cell.textContent = '');
-    gameBoard.difficultyLevel = 1; // Reset difficulty level in game logic
+    cellData.forEach(cell => cell.textContent = '');
+    gameBoard.difficultyLevel = 1; // Reset difficulty level
     difficultySlider.value = 1; // Reset slider visual content
-    difficultyValue.textContent=1; //reset UI value
-    
+    difficultyValue.textContent = 1; // Reset UI value
     document.getElementById('modalMessage').textContent = '';
-    showModal(); 
-});
+}
 
-// event listener on all cells to make player move
+// Event listener for player moves
 cellData.forEach(cellElement => {
     cellElement.addEventListener('click', () => {
         if (!gameBoard.gameOver && gameBoard.currentPlayer === gameBoard.playerSelection) {
@@ -321,15 +332,8 @@ cellData.forEach(cellElement => {
             const moveSuccess = gameBoard.getPlayerMove(rowData, colData);
             
             if (moveSuccess) {
-                cellElement.textContent = gameBoard.playerSelection; // Update display
-                if(gameBoard.playerSelection==='X'){            // adding class for styling
-                    cellElement.classList.add('X-color')
-                    cellElement.classList.remove('O-color')
-                }
-                else{
-                    cellElement.classList.add('O-color')
-                    cellElement.classList.remove('X-color')
-                }
+                updateCellDisplay(cellElement);
+                
                 // Check if the game is over
                 if (gameBoard.gameOver) {
                     gameEnd();
@@ -345,6 +349,18 @@ cellData.forEach(cellElement => {
     });
 });
 
+// Update cell display based on player selection
+function updateCellDisplay(cellElement) {
+    cellElement.textContent = gameBoard.playerSelection; // Update display
+    if (gameBoard.playerSelection === 'X') {
+        cellElement.classList.add('X-color');
+        cellElement.classList.remove('O-color');
+    } else {
+        cellElement.classList.add('O-color');
+        cellElement.classList.remove('X-color');
+    }
+}
+
 // Make computer move
 function makeCompMove() {
     if (!gameBoard.gameOver && gameBoard.currentPlayer === gameBoard.computerSelection) {
@@ -355,14 +371,7 @@ function makeCompMove() {
             if (compMove) {
                 const compCell = document.querySelector(`[data-row="${compMove.row}"][data-col="${compMove.col}"]`);
                 compCell.textContent = gameBoard.computerSelection;
-
-                if (gameBoard.computerSelection === 'X') { // adding class for styling
-                    compCell.classList.add('X-color');
-                    compCell.classList.remove('O-color');
-                } else {
-                    compCell.classList.add('O-color');
-                    compCell.classList.remove('X-color');
-                }
+                updateComputerCellDisplay(compCell);
                 
                 // Check if the game is over after computer's move
                 if (gameBoard.gameOver) {
@@ -372,14 +381,27 @@ function makeCompMove() {
                 
                 gameBoard.switchPlayer(); // Switch to the player's turn
             }
-        }, 700); // 1000 milliseconds = 1 second delay
+        }, 700); // Delay for the computer's move
     }
 }
-// function to bring up the endgame modal and declare winner
+
+// Update computer cell display based on selection
+function updateComputerCellDisplay(compCell) {
+    if (gameBoard.computerSelection === 'X') {
+        compCell.classList.add('X-color');
+        compCell.classList.remove('O-color');
+    } else {
+        compCell.classList.add('O-color');
+        compCell.classList.remove('X-color');
+    }
+}
+
+// Function to bring up the endgame modal and declare the winner
 function gameEnd() {
     const modal = document.getElementById('gameEndModal');
     modal.classList.remove('hidden');
     modal.classList.add('show');
+    
     const modalMessage = document.getElementById('modalMessage');
     const winner = gameBoard.checkWinner();
     
@@ -387,7 +409,7 @@ function gameEnd() {
         modalMessage.textContent = "It's a draw! Try again.";
     } else {
         modalMessage.textContent = `${winner} wins! Play Again?`;
-    } // Show the modal
+    }
 }
 
 // Event listener for GAMEEND modal
@@ -395,14 +417,7 @@ document.getElementById('newGameBtn').addEventListener('click', () => {
     const modal = document.getElementById('gameEndModal');
     modal.classList.add('hidden');
     modal.classList.remove('show');
-    // Reset the game board logic here
-    gameBoard.reset();
-    document.querySelectorAll('.cell').forEach(cell => cell.textContent = '');
-    gameBoard.difficultyLevel = 1; // Reset difficulty level in game logic
-    difficultySlider.value = 1; // Reset slider visual content
-    difficultyValue.textContent=1; //reset UI value
-    
-    document.getElementById('modalMessage').textContent = '';
+    resetGame();
     showModal(); 
 });
 
@@ -416,31 +431,15 @@ function showModal() {
 function closeModal() {
     document.getElementById('selectionModal').classList.add('hidden');
     document.getElementById('selectionModal').classList.remove('show');
-    document.querySelectorAll('.cell').forEach(cell => cell.setAttribute('class', 'cell') );// resetting class for cell border styling
-    // Check if player selected 'O', if so, let the computer make the first move
-    buttonX.classList.add('active');
+    cellData.forEach(cell => cell.setAttribute('class', 'cell')); // Resetting class for cell border styling
+    
+    buttonX.classList.add('active');            //defaults to X, so for styling i want X to be default
     buttonO.classList.remove('active');
+    // If player selected 'O', let the computer make the first move
     if (gameBoard.playerSelection === 'O') {
         makeCompMove(); // Start with computer's move
     }
 }
 
-
-
-// Update difficulty level based on slider input
-difficultySlider.addEventListener('input', function () {
-    gameBoard.difficultyLevel = parseInt(this.value);
-    difficultyValue.textContent=difficultySlider.value;
-});
-
-function newGame() {
-    gameBoard.reset(); // Reset the game board state
-    cellData.forEach(cellElement => {
-    cellElement.textContent = ''; // Clear the text content of each cell
-    });
-    gameBoard.difficultyLevel=1;
-    displayMessage.textContent= "";
-    showModal(); // Show the modal again for player selection
-}
-
+// Show the modal at the start
 showModal();
