@@ -6,13 +6,13 @@
 
 body{
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
     background-color: #1E1E1E;
-    color: #FFFFFF;
     font-family: 'Bubblegum Sans';
-    font-size: 22px;
+    font-size: 25px;
 }
 
 
@@ -129,37 +129,53 @@ body{
 
 .modal-content{
     background-color: #000000;
+    min-width: fit-content;
     margin: 5% auto; 
     padding: 20px;
     font-size: 40px;
     border: 1px solid #888;
-    width: 40%;
+    width: 30%;
+    height: 60%;
     display: flex;
-    flex-direction: column;
+    flex-direction: row-reverse;
     align-items: center;
-    gap:40px;
+    justify-content: center;
+    gap:50px;
+    padding: 10px;
+    position: relative;
+    background: radial-gradient(circle at top left, #0a0a0a, #000);
+    border-radius: 15px;
+    }
 
+    .span-close{
+        justify-self: flex-end;
+        cursor: pointer;
+        top:10px;
+        right: 30px;
+        position: absolute;
+        color: #FFFFFF;
+        text-shadow: 0 0 5px #00B0FF, 0 0 10px #00B0FF;
     }
     
-    .game-end-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0,0,0,0.7); /* Overlay effect */
-    justify-content: center;
+    .game-inputs{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 20px;
+        color: #FFFFFF;
+        text-shadow: 0 0 5px #ff0080, 0 0 10px #ff0080;
+        padding: 30px;
+    }
+
+.difficulty-container{
+    display: flex;
     align-items: center;
-    z-index: 3;
+    justify-content: center;
+    gap: 15px;
+    width: 100%;
 }
 
-.game-end-modal-content {
-    background-color: #413b3b;
-    margin: 5% auto; 
-    padding: 20px;
-    border: 1px solid #888;
-    width: 40%; 
-}
 
 #newGameBtn {         /*game end button*/
     margin-top: 20px;
@@ -167,64 +183,68 @@ body{
     cursor: pointer;
 }
 
+.game-btn-wrapper{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
 /*button animation*/
-.new-game-button{
+.new-game-button {
     background-color: transparent;
     color: #0bf4f3;
     position: relative;
-    right: 20px;
-    bottom: 20px;
-    border:none;
-    width: 130px;
+    border: none;
+    width: 150px;
     height: 40px;
     line-height: 40px;
-    -webkit-perspective: 230px;
-    perspective: 230px;
+    -webkit-perspective: 350px; /* Increased perspective for deeper 3D effect */
+    perspective: 350px;
 }
-  .new-game-button span {
-      display: block;
-      position: absolute;
-      width: 130px;
-      height: 40px;
-      border: 1px solid #0bf4f3;
-      box-shadow: 0 0 5px #0bf4f3, 0 0 5px #0bf4f3 inset;
-      margin:0;
-      text-align: center;
-      -webkit-box-sizing: border-box;
-      -moz-box-sizing: border-box;
-      box-sizing: border-box;
-      -webkit-transition: all .3s;
-      transition: all .3s;
-    }
-    .new-game-button span:nth-child(1) {
-        box-shadow: 0 0 5px #0bf4f3, 0 0 5px #0bf4f3 inset;
-        -webkit-transform: rotateX(90deg);
-        -moz-transform: rotateX(90deg);
-        transform: rotateX(90deg);
-        -webkit-transform-origin: 50% 50% -20px;
-        -moz-transform-origin: 50% 50% -20px;
-        transform-origin: 50% 50% -20px;
-    }
-    .new-game-button span:nth-child(2) {
+
+.new-game-button span {
+    display: block;
+    position: absolute;
+    left:0;
+    width: 150px;
+    height: 40px;
+    border: 1px solid #00B0FF;
+    box-shadow: 0 0 10px #00B0FF, 0 0 15px #00B0FF inset; /* Stronger glow */
+    margin: 0;
+    box-sizing: border-box;
+    -webkit-transition: all 0.4s ease; /* Slower transition for smoother animation */
+    transition: all 0.4s ease;
+}
+
+.new-game-button span:nth-child(1) {
+    box-shadow: 0 0 10px #00B0FF, 0 0 10px #00B0FF inset; 
+    -webkit-transform: rotateX(90deg);
+    -moz-transform: rotateX(90deg);
+    transform: rotateX(90deg);
+    transform-origin: 50% 50% -20px;
+}
+
+.new-game-button span:nth-child(2) {
     -webkit-transform: rotateX(0deg);
     -moz-transform: rotateX(0deg);
     transform: rotateX(0deg);
-    -webkit-transform-origin: 50% 50% -20px;
-    -moz-transform-origin: 50% 50% -20px;
     transform-origin: 50% 50% -20px;
 }
+
 .new-game-button:hover span:nth-child(1) {
     -webkit-transform: rotateX(0deg);
     -moz-transform: rotateX(0deg);
     transform: rotateX(0deg);
-    box-shadow: 0 0 5px #FF4081, 0 0 5px #FF4081 inset;
+    box-shadow: 0 0 15px #FF4081, 0 0 20px #FF4081 inset; /* Brighter neon shadow on hover */
     color: #FF4081;
     border: 1px solid #FF4081;
 }
+
 .new-game-button:hover span:nth-child(2) {
     background: #000;
     color: #000;
-    box-shadow: 0 0 5px #FF4081, 0 0 5px #FF4081 inset;
+    box-shadow: 0 0 15px #FF4081, 0 0 20px #FF4081 inset;
     -webkit-transform: rotateX(-90deg);
     -moz-transform: rotateX(-90deg);
     transform: rotateX(-90deg);
@@ -232,14 +252,8 @@ body{
 }
 
 
-/* text styling*/
 
-.colorful-text{
-    background: linear-gradient(to right, #00B0FF, #FF4081);
-    -webkit-text-fill-color: transparent;
-    -webkit-background-clip: text;
 
-}
 
 /* cell letter styling */
 .X-color {
@@ -290,6 +304,7 @@ body{
     display: flex;
     gap: 30px;
 }
+
 .modal-btn {
     width: 130px;
     height: 40px;
@@ -302,13 +317,13 @@ body{
     font-size: 30px;
   }
   .modal-btn-X {
-    position: relative;
-    color: #00aced;
-    border: none;
+      position: relative;
+      color: #00aced;
+      border: none;
     z-index: 2;
-  }
+}
 
-  .modal-btn-O {
+.modal-btn-O {
     position: relative;
     color: #FF4081;
     border: none;
@@ -325,32 +340,32 @@ body{
     
     z-index: -1;
     transition: all 0.3s ease;
-  }
-  .modal-btn-X:before{
+}
+.modal-btn-X:before{
      top: 0;
      left: 0;
      border-bottom-color: transparent;
      border-right-color: transparent;
      border-top-color: #00aced;
      border-left-color: #00aced;
-  }
+    }
   .modal-btn-X:after{
-     bottom: 0;
-     right: 0;
-     border-top-color: transparent;
-     border-left-color: transparent;
+      bottom: 0;
+      right: 0;
+      border-top-color: transparent;
+      border-left-color: transparent;
      border-bottom-color: #00aced;
      border-right-color: #00aced;
   }
 
   .modal-btn-O:before{
-    top: 0;
-    left: 0;
-    border-bottom-color: transparent;
+      top: 0;
+      left: 0;
+      border-bottom-color: transparent;
     border-right-color: transparent;
     border-top-color: #FF4081;
     border-left-color: #FF4081;
- }
+}
  .modal-btn-O:after{
     bottom: 0;
     right: 0;
@@ -366,26 +381,50 @@ body{
     height: 100%;
     width: 100%;
     box-shadow: 0 0 5px #00aced, 0 0 5px #00aced inset;
-  }
+}
 
   .modal-btn-O:hover:before,
   .modal-btn-O:hover:after {
-    border-color: #FF4081;
-    height: 100%;
-    width: 100%;
-    box-shadow: 0 0 5px #FF4081, 0 0 5px #FF4081 inset;
-  }
+      border-color: #FF4081;
+      height: 100%;
+      width: 100%;
+      box-shadow: 0 0 5px #FF4081, 0 0 5px #FF4081 inset;
+    }
+    
+    .modal-btn-X:hover {
+        background: rgba(0, 172, 237, 0.1); /* Adds a faint blue glow */
+    }
+    .modal-btn-O:hover {
+        background: rgba(255, 64, 129, 0.1); /* Adds a faint pink glow */
+    }
 
-  /*slider styling*/
-  input[type="range"] {
-    -webkit-appearance: none;
-    width: 40%;
+    .modal-btn-X.active:before,
+    .modal-btn-X.active:after {
+        border-color: #00aced;
+        height: 100%;
+        width: 100%;
+        box-shadow: 0 0 5px #00aced, 0 0 5px #00aced inset;
+    }
+
+    .modal-btn-O.active:before,
+    .modal-btn-O.active:after {
+        border-color: #FF4081;
+        height: 100%;
+        width: 100%;
+        box-shadow: 0 0 5px #FF4081, 0 0 5px #FF4081 inset;
+    }
+
+
+    /*slider styling*/
+    input[type="range"] {
+      width: 40%;
     height: 5px;
     border-radius: 10px;
-    background: #ffffff;
+    background: linear-gradient(90deg, #ff0080, #00aced);
+    box-shadow: 0 0 5px #ff0080, 0 0 10px #00aced, 0 0 20px #ff0080;
     outline: none;
-    opacity: 0.8;
-  }
+    opacity: 0.9;
+}
   
   input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none;
@@ -401,3 +440,97 @@ body{
   input[type="range"]::-webkit-slider-thumb:hover {
     opacity: 1;
   }
+
+  input[type="range"]:active::-webkit-slider-thumb {
+      box-shadow: 0 0 10px #00aced, 0 0 20px #00aced, 0 0 30px #00aced;
+}
+
+
+#difficultyValue {
+    font-size: 1.2rem;
+    color: #ff0080;
+    text-shadow: 0 0 5px #ff0080, 0 0 10px #ff0080;
+}
+
+/*winner msg styling*/
+
+.game-end-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.7); /* Overlay effect */
+    justify-content: center;
+    align-items: center;
+    z-index: 3;
+}
+
+.game-end-modal-content {
+    background-color: #000000;
+    margin: 5% auto; 
+    padding: 20px;
+    border: 1px solid #888;
+    width: 40%;
+    height: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center items horizontally */
+    justify-content: center; /* Center items vertically */
+    gap: 50px;
+    padding: 10px;
+    background: radial-gradient(circle at top left, #0a0a0a, #000);
+    border-radius: 15px;
+    font-size: inherit; /* Ensure it inherits the font size unless 
+    overridden */
+}
+/* text styling*/
+
+@supports (-webkit-background-clip: text) {
+    .colorful-text {
+        background: linear-gradient(to right, #00B0FF, #FF4081);
+        -webkit-text-fill-color: transparent;
+        -webkit-background-clip: text;
+    }
+}
+
+@supports not (-webkit-background-clip: text) {
+    .colorful-text {
+        color: #00B0FF; /* Fallback color */
+    }
+}
+
+/* footer styling*/
+.footer {
+    background-image: radial-gradient(100% 100% at 100% 0, #00B0FF 0, var(--footer) 100%);
+    grid-area: footer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    font-size: 17px;
+    padding: 5px;
+    text-shadow: 0 0 10px #ffffff, 0 0 20px #00B0FF, 0 0 30px #00B0FF; /* Neon glow for text */
+    text-align: center;
+    color: #ffffff;
+    height: 40px; /* Ensure enough height for footer content */
+    position: fixed; 
+    bottom: 0; 
+    left: 0; 
+    right: 0;
+    z-index: 1000; /* Ensures the footer stays on top of other content */
+}
+
+/* Footer icon styling */
+.fa-github {
+    color: #00B0FF;
+    transition: transform 0.3s ease-in-out, color 0.3s ease-in-out;
+    text-shadow: 0 0 10px #ffffff, 0 0 20px #ff007f, 0 0 30px #ff007f; /* Neon pink glow for GitHub icon */
+}
+
+.fa-github:hover {
+    transform: rotate(360deg) scale(1.6);
+    color: #ff007f; /* Neon pink color on hover */
+    text-shadow: 0 0 15px #ff007f, 0 0 30px #ff007f; /* Stronger neon glow on hover */
+}

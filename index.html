@@ -3,9 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>NEON MORE NEON </title>
     <link rel="stylesheet" href="style.css">
     <link href='https://fonts.googleapis.com/css?family=Bubblegum Sans' rel='stylesheet'>
+    <script
+    src="https://kit.fontawesome.com/4c536a6bd5.js"
+    crossorigin="anonymous"
+  ></script>
 </head>
 <body>
     <main id="container">
@@ -26,22 +30,48 @@
     </main>
     <div id="selectionModal" class="modal">
         <div class="modal-content">
-            <h3>Choose Your Symbol</h3>
-            <div class="button-container">
-                <button id="selectX" class=" modal-btn-X modal-btn"><span>X</span></button>
-                <button id="selectO" class="modal-btn-O modal-btn"><span>O</span></button>
+            <span id="cancel" class="span-close">&times;</span>
+            <div class="game-inputs">             
+                <h3>Choose Your Symbol</h3>
+                <div class="button-container">
+                    <button id="selectX" class=" modal-btn-X modal-btn active"><span>X</span></button>
+                    <button id="selectO" class="modal-btn-O modal-btn"><span>O</span></button>
+                </div>
+                <label for="difficulty-slider">Set difficulty</label>
+                <div class="difficulty-container">
+                    <input type="range" id="difficulty-slider" min="1" max="3" value="1">
+                    <span id="difficultyValue">1</span>
+                </div>
+            <div class="game-btn-wrapper">
+                <button class="start-game new-game-button">
+                    <span>Begin!</span><span>New Game</span>
+                </button> 
+            </div> 
             </div>
-            <label for="difficulty-slider">Set difficulty</label>
-            <input type="range" id="difficulty-slider" min="1" max="3" value="1">
-            <button id="cancel">Cancel</button>
         </div>
     </div>
     <div id="gameEndModal" class="game-end-modal hidden">
         <div class="game-end-modal-content">
-          <h2 id="modalMessage" class="neon colorful-text"></h2>
-          <button id="newGameBtn">New Game</button>
+            <div id="modalMessage" class="colorful-text">Game Over</div>
+            <div class="game-btn-wrapper">
+                <button id="newGameBtn" class="new-game-button"><span>Begin!</span><span>New Game</span></button>
+            </div>
         </div>
-      </div>
+    </div>
+    <div class="footer">  
+        <footer class="footer">
+            <p>
+                Copyright ©
+            <script>
+                    document.write(new Date().getFullYear())
+             </script>
+                    Divyang Kotian
+            </p>
+            <a href="https://github.com/DivyangKotian" target="_blank">
+                <i class="fab fa-github"></i>
+            </a>
+        </footer>
+    </div>   
 </body>
 <script src="/main.js"></script>
 </html>
