@@ -96,7 +96,6 @@ body{
 
 .cell:hover {
     background-color: #ddd;
-    /* transform: scale(1.03) */
 }
 
 #modalMessage {
@@ -157,6 +156,12 @@ body{
         text-shadow: 0 0 5px #00B0FF, 0 0 10px #00B0FF;
     }
     
+    .span-close:hover{
+        transform: scale(1.2);
+        color: #FFFFFF;
+        text-shadow: 0 0 5px #ff0080, 0 0 10px #ff0080;
+    }
+
     .game-inputs{
         display: flex;
         flex-direction: column;

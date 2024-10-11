@@ -348,28 +348,31 @@ cellData.forEach(cellElement => {
 // Make computer move
 function makeCompMove() {
     if (!gameBoard.gameOver && gameBoard.currentPlayer === gameBoard.computerSelection) {
-        const compMove = gameBoard.computerMove();
-        
-        if (compMove) {
-            const compCell = document.querySelector(`[data-row="${compMove.row}"][data-col="${compMove.col}"]`);
-            compCell.textContent = gameBoard.computerSelection;
-
-            if(gameBoard.computerSelection==='X'){      // adding class for styling
-                compCell.classList.add('X-color')
-                compCell.classList.remove('O-color')
-            }
-            else{
-                compCell.classList.add('O-color')
-                compCell.classList.remove('X-color')
-            }
-            // Check if the game is over after computer's move
-            if (gameBoard.gameOver) {
-                gameEnd();
-                return; // End if there's a winner or a draw
-            }
+        // Set a timeout for the computer's move
+        setTimeout(() => {
+            const compMove = gameBoard.computerMove();
             
-            gameBoard.switchPlayer(); // Switch to the player's turn
-        }
+            if (compMove) {
+                const compCell = document.querySelector(`[data-row="${compMove.row}"][data-col="${compMove.col}"]`);
+                compCell.textContent = gameBoard.computerSelection;
+
+                if (gameBoard.computerSelection === 'X') { // adding class for styling
+                    compCell.classList.add('X-color');
+                    compCell.classList.remove('O-color');
+                } else {
+                    compCell.classList.add('O-color');
+                    compCell.classList.remove('X-color');
+                }
+                
+                // Check if the game is over after computer's move
+                if (gameBoard.gameOver) {
+                    gameEnd();
+                    return; // End if there's a winner or a draw
+                }
+                
+                gameBoard.switchPlayer(); // Switch to the player's turn
+            }
+        }, 700); // 1000 milliseconds = 1 second delay
     }
 }
 // function to bring up the endgame modal and declare winner
